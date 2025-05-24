@@ -20,7 +20,7 @@ import { User } from 'src/users/entities/user.entity';
         port: configService.get<number>('DB_PORT'),
         username: configService.get<string>('DB_USER'),
         password: configService.get<string>('DB_PASSWORD'),
-        database: configService.get<string>('DB_NAME'),
+        database: configService.get<string>('DB_DATABASE'),
         entities: [User],
         synchronize: process.env.NODE_ENV !== 'production', // Chỉ dùng cho development
       }),
