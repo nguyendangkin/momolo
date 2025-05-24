@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16.9
+    restart: always
+    container_name: momolo-postgres
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_DATABASE}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - '${DB_PORT}:5432'
+    networks:
+      - momolo-networks
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USERNAME}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: momolo-server
+    env_file:
+      - ./server/.env.production
+    ports:
+      - '${SERVER_PORT}:${SERVER_PORT}'
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - momolo-networks
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -f http://localhost:${SERVER_PORT}/healthCheck']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: momolo-client
+    env_file:
+      - ./client/.env.production
+    ports:
+      - '${CLIENT_PORT}:3000'
+    depends_on:
+      server:
+        condition: service_healthy
+    networks:
+      - momolo-networks
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  pgadmin:
+    image: dpage/pgadmin4:8.5
+    restart: always
+    container_name: momolo-pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD}
+    ports:
+      - '${PGADMIN_HOST_PORT}:${PGADMIN_CONTAINER_PORT}'
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - momolo-networks
+
+networks:
+  momolo-networks:
+    driver: bridge
+
+volumes:
+  postgres_data:
