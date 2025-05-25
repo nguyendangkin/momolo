@@ -21,7 +21,7 @@ export default async function HomePage() {
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-gray-900 text-center mb-2">
-                        Quản lý người dùng CHINKIN
+                        Quản lý người dùng CHINKIN 2
                     </h1>
                     <p className="text-gray-600 text-center">
                         Thêm, sửa, xóa và xem danh sách người dùng
