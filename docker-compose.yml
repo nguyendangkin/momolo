@@ -73,17 +73,41 @@ services:
         condition: service_healthy
     networks:
       - momolo-networks
+
   nginx:
     image: nginx:1.24.0
     container_name: momolo-nginx
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
     depends_on:
       - client
     networks:
       - momolo-networks
+
+  certbot:
+    image: certbot/certbot:v2.10.0
+    container_name: momolo-certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: >
+      sh -c "certbot certonly --webroot
+             --webroot-path=/var/www/certbot
+             --email nguyenchin0077@gmail.com
+             --agree-tos
+             --no-eff-email
+             -d momolo.io.vn
+             -d www.momolo.io.vn"
+    depends_on:
+      - nginx
+    networks:
+      - momolo-networks
+
 networks:
   momolo-networks:
     driver: bridge
