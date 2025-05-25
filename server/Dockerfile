@@ -8,8 +8,6 @@ RUN npm install
 
 COPY . .
 
-COPY .env.production .env
-
 RUN npm run build
 
 EXPOSE 8080

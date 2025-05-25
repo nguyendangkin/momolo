@@ -46,8 +46,6 @@ services:
       context: ./client
       dockerfile: Dockerfile
     container_name: momolo-client
-    env_file:
-      - ./client/.env.production
     ports:
       - '${CLIENT_PORT}:3000'
     depends_on:
