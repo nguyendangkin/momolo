@@ -16,7 +16,7 @@ jobs:
                   password: ${{ secrets.PASSWORD }}
                   port: 22
                   script: |
-                      cd /root/services/momolo
+                      cd /root/services/momolo-2
                       git fetch origin
                       git checkout production
                       git pull
